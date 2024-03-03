@@ -1,4 +1,9 @@
+"use client";
+
 import Image from "next/image";
+import { KeysContext } from "./keyboardDisplay";
+import { useContext } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 
 export type KeyCapProps = {
   text: string;
@@ -22,6 +27,9 @@ export const KeyCap: React.FC<KeyCapProps> = ({
   iconUrl,
   iconUrlAlt = "A spell icon",
 }) => {
+  const { lastKeyPress, setLastKeyPress } = useContext(KeysContext);
+  useHotkeys(text, () => setLastKeyPress(text));
+
   const imageWidths = {
     small: 52,
     "small+": 62,
@@ -59,7 +67,9 @@ export const KeyCap: React.FC<KeyCapProps> = ({
     }
   })();
 
-  const keyClass = `overflow-clip bg-slate-800 border-slate-800 border-4 ${keyWidthClass} h-[52px] flex justify-center items-center ${
+  const keyClass = `overflow-clip bg-slate-800 ${
+    lastKeyPress === text ? "border-yellow-500" : "border-slate-800"
+  }  border-4 ${keyWidthClass} h-[52px] flex justify-center items-center ${
     size === "enter" ? "rounded-t-md rounded-l-md" : "rounded-md"
   }`;
 
@@ -71,7 +81,12 @@ export const KeyCap: React.FC<KeyCapProps> = ({
     <div className="bg-slate-700 pl-2 pr-1 pt-1 pb-2 rounded-md relative text-center hover:scale-105 transition-all duration-200">
       {iconUrl ? (
         <div className={keyClass}>
-          <Image src={iconUrl} alt={iconUrlAlt} width={imageWidths[size]} height={52} />
+          <Image
+            src={iconUrl}
+            alt={iconUrlAlt}
+            width={imageWidths[size]}
+            height={52}
+          />
         </div>
       ) : (
         <div className={keyClass}>{text}</div>

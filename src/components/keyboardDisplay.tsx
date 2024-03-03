@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { createContext, useState } from "react";
 import { Keyboard, KeyboardProps } from "./keyboard";
 
 const keyboardRows = [
@@ -104,34 +104,44 @@ const keyboardRows = [
 ] satisfies KeyboardProps["rows"];
 
 export type KeyboardDisplayProps = {
-  bindings?: KeyboardProps["keyBindings"]
-}
+  bindings?: KeyboardProps["keyBindings"];
+};
 
-export const KeyboardDisplay: React.FC<KeyboardDisplayProps> = ({ bindings }) => {
+export const KeysContext = createContext({
+  lastKeyPress: "",
+  setLastKeyPress: (lastKey: string) => {},
+});
+
+export const KeyboardDisplay: React.FC<KeyboardDisplayProps> = ({
+  bindings,
+}) => {
+  const [lastKeyPress, setLastKeyPress] = useState("");
   const [iconMode, setIconMode] = useState(false);
 
   return (
     <div>
-      <div className="bg-slate-900 rounded-t-lg flex justify-between px-8 py-2">
-        <h2 className="font-bold uppercase text-3xl bg-gradient-to-r from-red-600 via-red-500 to-blue-600 text-transparent bg-clip-text tracking-widest">
-          Keybindings Helper
-        </h2>
-        <div className="flex gap-4 items-center">
-          <label htmlFor="icon-mode">Show Icons?</label>
-          <input
-            type="checkbox"
-            name="icon-mode"
-            checked={iconMode}
-            onChange={(e) => setIconMode(e.target.checked)}
-          />
+      <KeysContext.Provider value={{ lastKeyPress, setLastKeyPress }}>
+        <div className="bg-slate-900 rounded-t-lg flex justify-between px-8 py-2">
+          <h2 className="font-bold uppercase text-3xl bg-gradient-to-r from-red-600 via-red-500 to-blue-600 text-transparent bg-clip-text tracking-widest">
+            Keybindings Helper
+          </h2>
+          <div className="flex gap-4 items-center">
+            <label htmlFor="icon-mode">Show Icons?</label>
+            <input
+              type="checkbox"
+              name="icon-mode"
+              checked={iconMode}
+              onChange={(e) => setIconMode(e.target.checked)}
+            />
+          </div>
         </div>
-      </div>
 
-      <Keyboard
-        rows={keyboardRows}
-        keyBindings={bindings}
-        iconMode={iconMode}
-      />
+        <Keyboard
+          rows={keyboardRows}
+          keyBindings={bindings}
+          iconMode={iconMode}
+        />
+      </KeysContext.Provider>
     </div>
   );
 };

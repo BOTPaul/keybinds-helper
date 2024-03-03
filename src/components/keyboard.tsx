@@ -43,10 +43,10 @@ export const Keyboard: React.FC<KeyboardProps> = ({
   return (
     <div className="bg-slate-900 flex flex-col gap-1 p-4 rounded-b-lg">
       {mappedKeyBindings.map((row) => (
-        <div className="flex gap-1" key={row.join()}>
-          {row.map((keyCap) => (
+        <div className="flex gap-1" key={JSON.stringify(row)}>
+          {row.map((keyCap, index) => (
             <KeyCap
-              key={keyCap.text}
+              key={index}
               text={keyCap.text}
               size={keyCap.size}
               iconUrl={keyCap.iconUrl}

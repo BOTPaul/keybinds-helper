@@ -26,6 +26,11 @@ body {
     rgb(var(--background-start-rgb));
 }
 
+.bg-grad {
+  background: radial-gradient(100% 500px at 200px top, #7f1d1d, transparent),
+    radial-gradient(100% 500px at bottom right, #1e3a8a, transparent);
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

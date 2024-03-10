@@ -1,49 +1,44 @@
 "use client";
 
 import Image from "next/image";
-import { KeysContext } from "./keyboardDisplay";
 import { useContext } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import { KeysContext } from "./KeysContext";
+import { KeyConfig } from "./keyboardRows";
 
 export type KeyCapProps = {
-  text: string;
-  size:
-    | "small"
-    | "small+"
-    | "medium"
-    | "medium+"
-    | "medium++"
-    | "large"
-    | "space"
-    | "enter"
-    | "enterSkip";
+  config: KeyConfig;
+  allowHighlight?: boolean;
   iconUrl?: string;
   iconUrlAlt?: string;
 };
 
 export const KeyCap: React.FC<KeyCapProps> = ({
-  text,
-  size,
+  config,
+  allowHighlight = true,
   iconUrl,
   iconUrlAlt = "A spell icon",
 }) => {
   const { lastKeyPress, setLastKeyPress } = useContext(KeysContext);
-  useHotkeys(text, () => setLastKeyPress(text));
+  useHotkeys(config.keyName, (e) => {
+    e.preventDefault();
+    setLastKeyPress(config);
+  });
 
   const imageWidths = {
-    small: 52,
-    "small+": 62,
-    medium: 86,
-    "medium+": 100,
-    "medium++": 110,
-    large: 120,
-    space: 430,
-    enter: 84,
-    enterSkip: 52,
-  } satisfies Record<KeyCapProps["size"], number>;
+    small: 42,
+    "small+": 52,
+    medium: 76,
+    "medium+": 90,
+    "medium++": 100,
+    large: 110,
+    space: 420,
+    enter: 74,
+    enterSkip: 42,
+  } satisfies Record<KeyConfig["size"], number>;
 
   const keyWidthClass = (() => {
-    switch (size) {
+    switch (config.size) {
       case "small":
         return "w-[52px]";
       case "small+":
@@ -68,12 +63,14 @@ export const KeyCap: React.FC<KeyCapProps> = ({
   })();
 
   const keyClass = `overflow-clip bg-slate-800 ${
-    lastKeyPress === text ? "border-yellow-500" : "border-slate-800"
-  }  border-4 ${keyWidthClass} h-[52px] flex justify-center items-center ${
-    size === "enter" ? "rounded-t-md rounded-l-md" : "rounded-md"
+    allowHighlight && lastKeyPress?.keyName === config.keyName
+      ? "bg-yellow-600"
+      : ""
+  }  ${keyWidthClass} h-[52px] flex justify-center items-center ${
+    config.size === "enter" ? "rounded-t-md rounded-l-md" : "rounded-md"
   }`;
 
-  if (size === "enterSkip") {
+  if (config.size === "enterSkip") {
     return <div className={keyWidthClass}></div>;
   }
 
@@ -84,16 +81,22 @@ export const KeyCap: React.FC<KeyCapProps> = ({
           <Image
             src={iconUrl}
             alt={iconUrlAlt}
-            width={imageWidths[size]}
-            height={52}
+            width={imageWidths[config.size]}
+            height={42}
           />
         </div>
       ) : (
-        <div className={keyClass}>{text}</div>
+        <div className={keyClass}>{config.text}</div>
       )}
-      {size === "enter" && (
+      {config.size === "enter" && (
         <div className="bg-slate-700 absolute pl-2 pr-1 pb-2 rounded-md left-[14px]">
-          <div className="bg-slate-800 w-[72px] h-[68px] rounded-b-md"></div>
+          <div
+            className={`bg-slate-800 w-[72px] h-[68px] rounded-b-md ${
+              allowHighlight && lastKeyPress?.keyName === config.keyName
+                ? "bg-yellow-600"
+                : ""
+            }`}
+          ></div>
         </div>
       )}
     </div>

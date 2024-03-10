@@ -1,5 +1,5 @@
 import { KeyboardProps } from "@/components/keyboard";
-import { KeyboardDisplay } from "@/components/keyboardDisplay";
+import { KeyboardDisplay } from "@/components/keyboard/keyboardDisplay";
 
 const keyBindings = [
   {

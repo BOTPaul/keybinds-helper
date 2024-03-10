@@ -1,4 +1,5 @@
 import { KeyCap, KeyCapProps } from "./keyCap";
+import { KeyConfig } from "./keyboardRows";
 
 export type Spell = {
   name: string;
@@ -13,7 +14,7 @@ export type Keybinding = {
 };
 
 export type KeyboardProps = {
-  rows: KeyCapProps[][];
+  rows: KeyConfig[][];
   iconMode?: boolean;
   keyBindings?: Keybinding[];
 };
@@ -24,16 +25,16 @@ export const Keyboard: React.FC<KeyboardProps> = ({
   keyBindings = [],
 }) => {
   const mappedKeyBindings = rows.map((row) =>
-    row.map((keyCap) => {
-      if (!iconMode) return keyCap;
+    row.map((keyConfig) => {
+      if (!iconMode) return { config: keyConfig };
 
       const binding = keyBindings.find(
-        (keyBinding) => keyBinding.key === keyCap.text
+        (keyBinding) => keyBinding.key === keyConfig.text
       );
-      if (!binding) return keyCap;
+      if (!binding) return { config: keyConfig };
 
       return {
-        ...keyCap,
+        config: keyConfig,
         iconUrl: binding.spell.iconUrl,
         iconUrlAlt: binding.spell.name,
       };
@@ -47,8 +48,7 @@ export const Keyboard: React.FC<KeyboardProps> = ({
           {row.map((keyCap, index) => (
             <KeyCap
               key={index}
-              text={keyCap.text}
-              size={keyCap.size}
+              config={keyCap.config}
               iconUrl={keyCap.iconUrl}
               iconUrlAlt={keyCap.iconUrlAlt}
             />
